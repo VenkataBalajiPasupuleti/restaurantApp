@@ -1,20 +1,22 @@
-import {useState, useEffect, useContext} from 'react'
-
+import {Component} from 'react'
 import Header from '../Header'
 import DishItem from '../DishItem'
-
-import CartContext from '../../context/CartContext'
-
+import TabItem from '../TabItem'
 import './index.css'
 
-const Home = () => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [response, setResponse] = useState([])
-  const [activeCategoryId, setActiveCategoryId] = useState('')
+class Home extends Component {
+  state = {
+    isLoading: true,
+    response: [],
+    activeCategoryId: '',
+    restaurantName: '',
+  }
 
-  const {cartList, setRestaurantName} = useContext(CartContext)
+  componentDidMount() {
+    this.fetchRestaurantApi()
+  }
 
-  const getUpdatedData = tableMenuList =>
+  getUpdatedData = tableMenuList =>
     tableMenuList.map(eachMenu => ({
       menuCategory: eachMenu.menu_category,
       menuCategoryId: eachMenu.menu_category_id,
@@ -33,88 +35,79 @@ const Home = () => {
       })),
     }))
 
-  const fetchRestaurantApi = async () => {
-    const api = 'https://run.mocky.io/v3/77a7e71b-804a-4fbd-822c-3e365d3482cc'
+  fetchRestaurantApi = async () => {
+    const api =
+      'https://apis2.ccbp.in/restaurant-app/restaurant-menu-list-details'
     const apiResponse = await fetch(api)
     const data = await apiResponse.json()
-    const updatedData = getUpdatedData(data[0].table_menu_list)
-    setResponse(updatedData)
-    setRestaurantName(data[0].restaurant_name)
-    setActiveCategoryId(updatedData[0].menuCategoryId)
-    setIsLoading(false)
+    // console.log(data[0].table_menu_list)
+    const updatedData = this.getUpdatedData(data[0].table_menu_list)
+    // console.log(updatedData)
+
+    const name = data[0].restaurant_name
+
+    this.setState({
+      response: updatedData,
+      activeCategoryId: updatedData[0].menuCategoryId,
+      isLoading: false,
+      restaurantName: name,
+    })
   }
 
-  useEffect(() => {
-    fetchRestaurantApi()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  renderDishes = () => {
+    const {response, activeCategoryId} = this.state
 
-  const onUpdateActiveCategoryIdx = menuCategoryId =>
-    setActiveCategoryId(menuCategoryId)
-
-  const addItemToCart = () => {}
-
-  const removeItemFromCart = () => {}
-
-  const renderTabMenuList = () =>
-    response.map(eachCategory => {
-      const onClickHandler = () =>
-        onUpdateActiveCategoryIdx(eachCategory.menuCategoryId)
-
-      return (
-        <li
-          className={`each-tab-item ${
-            eachCategory.menuCategoryId === activeCategoryId
-              ? 'active-tab-item'
-              : ''
-          }`}
-          key={eachCategory.menuCategoryId}
-          onClick={onClickHandler}
-        >
-          <button
-            type="button"
-            className="mt-0 mb-0 ms-2 me-2 tab-category-button"
-          >
-            {eachCategory.menuCategory}
-          </button>
-        </li>
-      )
-    })
-
-  const renderDishes = () => {
     const {categoryDishes} = response.find(
       eachCategory => eachCategory.menuCategoryId === activeCategoryId,
     )
 
     return (
-      <ul className="m-0 d-flex flex-column dishes-list-container">
+      <ul className="dishes-list-container">
         {categoryDishes.map(eachDish => (
-          <DishItem
-            key={eachDish.dishId}
-            dishDetails={eachDish}
-            addItemToCart={addItemToCart}
-            removeItemFromCart={removeItemFromCart}
-          />
+          <DishItem key={eachDish.dishId} dishDetails={eachDish} />
         ))}
       </ul>
     )
   }
 
-  const renderSpinner = () => (
-    <div className="spinner-container">
+  updatedData = menuCategoryId => {
+    this.setState({
+      activeCategoryId: menuCategoryId,
+    })
+  }
+
+  renderSpinner = () => (
+    <div className="loader-container">
       <div className="spinner-border" role="status" />
     </div>
   )
 
-  return isLoading ? (
-    renderSpinner()
-  ) : (
-    <div className="home-background">
-      <Header cartItems={cartList} />
-      <ul className="m-0 ps-0 d-flex tab-container">{renderTabMenuList()}</ul>
-      {renderDishes()}
-    </div>
-  )
+  render() {
+    const {isLoading, response, activeCategoryId} = this.state
+    const {restaurantName} = this.state
+
+    return isLoading ? (
+      this.renderSpinner()
+    ) : (
+      <>
+        <Header restaurantName={restaurantName} />
+        <div className="home-container">
+          <ul className="tab-container">
+            {response.map(eachCategory => (
+              <TabItem
+                key={eachCategory.menuCategoryId}
+                tabDetails={eachCategory}
+                clickedTab={this.updatedData}
+                isActive={activeCategoryId === eachCategory.menuCategoryId}
+              />
+            ))}
+          </ul>
+
+          {this.renderDishes()}
+        </div>
+      </>
+    )
+  }
 }
 
 export default Home

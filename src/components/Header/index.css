@@ -1,16 +1,25 @@
-.nav-header {
-  box-shadow: 0px 10px 10px -15px #111;
-}
+.header-container {
+  min-height: 10vh;
+  padding: 10px;
 
-.nav-header a {
-  text-decoration: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .logo-heading {
   font-family: 'Roboto';
   font-weight: 600;
   font-size: 35px;
-  color: #1f1f1f;
+  cursor: pointer;
+  margin: 0;
+}
+
+.orders-container-desktop {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: auto;
 }
 
 @media screen and (max-width: 576px) {
@@ -19,47 +28,79 @@
   }
 }
 
-.my-orders-text {
+.my-order-texts {
+  color: #585555;
   font-family: 'Roboto';
   font-weight: 500;
   font-size: 18px;
-  color: #585555;
-  text-decoration: none;
+
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-right: 20px;
 }
 
-.cart-icon-link {
-  position: relative;
-}
+.cart-icon-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
-.cart-icon-button {
-  border: none;
-  outline: none;
-  background-color: transparent;
-  padding: 0;
-}
+  background-color: yellow;
+  height: 30px;
+  width: 30px;
 
-.cart-icon {
-  font-size: 35px;
-  color: #585555;
+  border-radius: 15px;
+
+  margin-left: 10px;
 }
 
 .cart-count-badge {
-  background-color: #ff6347;
-  position: absolute;
-  top: -13px;
-  right: -8px;
-  height: 25px;
-  min-width: 25px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
+  color: red;
+  font-family: 'Roboto';
+  font-weight: bold;
+  font-size: 20px;
+
+  text-align: center;
 }
 
-.cart-count {
-  text-align: center;
-  color: #ffff;
-  font-family: 'Roboto';
-  font-weight: 500;
-  font-size: 12px;
-  margin: 0;
+@media screen and (max-width: 767px) {
+  .my-order-text {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .orders-container-desktop {
+    display: none;
+  }
+}
+
+.orders-container-mobile {
+  display: flex;
+  flex-direction: row;
+}
+
+@media (min-width: 576px) {
+  .orders-container-mobile {
+    display: none;
+  }
+}
+
+.link-item {
+  text-decoration: none;
+  background-color: transparent;
+
+  display: flex;
+  flex-direction: row;
+
+  border: none;
+  cursor: pointer;
+}
+
+.logout-btn {
+  background-color: transparent;
+
+  border: none;
+  outline: none;
+  cursor: pointer;
 }

@@ -1,58 +1,75 @@
-import {useContext} from 'react'
-import {FaRegTrashAlt} from 'react-icons/fa'
-
 import CartContext from '../../context/CartContext'
-
 import './index.css'
 
-const CartItem = ({cartItemDetails}) => {
-  const {
-    dishId,
-    dishName,
-    dishImage,
-    quantity,
-    dishCurrency,
-    dishPrice,
-  } = cartItemDetails
-  const {
-    incrementCartItemQuantity,
-    decrementCartItemQuantity,
-    removeCartItem,
-  } = useContext(CartContext)
+const CartItem = props => (
+  <CartContext.Consumer>
+    {value => {
+      const {
+        removeCartItem,
+        incrementCartItemQuantity,
+        decrementCartItemQuantity,
+      } = value
 
-  const onIncreaseQty = () => incrementCartItemQuantity(dishId)
+      const {cartItemDetails} = props
+      const {dishId, dishName, dishImage, dishPrice, quantity} = cartItemDetails
 
-  const onDecreaseQty = () => decrementCartItemQuantity(dishId)
+      const onClickPlusBtn = () => {
+        incrementCartItemQuantity(dishId)
+      }
 
-  const onRemoveCartItem = () => removeCartItem(dishId)
+      const onClickMinusBtn = () => {
+        decrementCartItemQuantity(dishId)
+      }
 
-  return (
-    <li className="cart-item-container">
-      <img className="cart-item-image" src={dishImage} alt={dishName} />
-      <div className="cart-item-details">
-        <p className="cart-item-name mb-1">{dishName}</p>
-        <p className="dish-currency-price mt-0 mb-2">
-          {dishCurrency} {(quantity * dishPrice).toFixed(2)}
-        </p>
-        <div className="control-btn-group">
-          <button type="button" className="control-btn" onClick={onDecreaseQty}>
-            -
-          </button>
-          <p className="cart-item-quantity">{quantity}</p>
-          <button type="button" className="control-btn" onClick={onIncreaseQty}>
-            +
-          </button>
-        </div>
-      </div>
-      <button
-        type="button"
-        className="remove-btn text-danger align-self-center"
-        onClick={onRemoveCartItem}
-      >
-        <FaRegTrashAlt />
-      </button>
-    </li>
-  )
-}
+      const onRemoveCartItem = () => {
+        removeCartItem(dishId)
+      }
+
+      const totalPrice = dishPrice * quantity
+
+      return (
+        <li className="cart-item">
+          <img src={dishImage} alt={dishName} className="dish-image" />
+
+          <div className="quantity-details-card">
+            <p>{dishName}</p>
+
+            <div className="plus-quantity-minus-btn-container">
+              <button
+                data-testid="cart-minus-btn"
+                onClick={onClickMinusBtn}
+                className="p-m-button"
+                type="button"
+              >
+                -
+              </button>
+              <p className="quantity-label">{quantity}</p>
+              <button
+                data-testid="cart-plus-btn"
+                onClick={onClickPlusBtn}
+                className="p-m-button"
+                type="button"
+              >
+                +
+              </button>
+            </div>
+
+            <div className="total-price-remove-container">
+              <p className="cart-total-price">${totalPrice}/-</p>
+              <button
+                data-testid="remove-btn"
+                onClick={onRemoveCartItem}
+                className="remove-btn"
+                type="button"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        </li>
+      )
+    }}
+  </CartContext.Consumer>
+)
 
 export default CartItem
